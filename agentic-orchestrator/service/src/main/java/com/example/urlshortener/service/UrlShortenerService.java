@@ -20,6 +20,7 @@ public class UrlShortenerService {
         this.baseUrl = baseUrl;
     }
 
+
     /**
      * Persists a new long URL and derives its short code from the
      * JPA auto-generated primary key.
