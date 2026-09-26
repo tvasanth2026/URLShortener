@@ -1,0 +1,175 @@
+workflowId: WF-URL-SHORTENER-001
+intent: "Build a URL shortener service with core APIs, analytics, and reliability features."
+scope: greenfield
+tasks:
+  - id: REQ-1
+    stage: REQUIREMENTS
+    description: "Interpret intent, resolve ambiguities, normalize problem statement"
+    owningAgent: RequirementAgent
+    dependsOn: []
+    requiresApproval: true
+    tracesTo: [REQ-URL-SHORTENER-001]
+
+  - id: PLAN-1
+    stage: TASK_DECOMPOSITION
+    description: "Decompose requirement into task graph"
+    owningAgent: PlannerAgent
+    dependsOn: [REQ-1]
+    requiresApproval: false
+
+  - id: DES-1
+    stage: DESIGN
+    description: "Define data model: ShortUrl entity"
+    owningAgent: ArchitectAgent
+    dependsOn: [PLAN-1]
+    requiresApproval: true
+    tracesTo: [FR1, FR6, FR7]
+
+  - id: DES-2
+    stage: DESIGN
+    description: "Define REST API contract"
+    owningAgent: ArchitectAgent
+    dependsOn: [PLAN-1]
+    requiresApproval: true
+    tracesTo: [FR1, FR2, FR3, FR4, FR5]
+
+  - id: DES-3
+    stage: DESIGN
+    description: "Define Base62 code gen strategy + collision handling"
+    owningAgent: ArchitectAgent
+    dependsOn: [DES-1]
+    requiresApproval: false
+    tracesTo: [NFR2]
+
+  - id: DES-4
+    stage: DESIGN
+    description: "Define caching strategy for redirect hot path"
+    owningAgent: ArchitectAgent
+    dependsOn: [DES-1]
+    requiresApproval: false
+    tracesTo: [NFR1]
+
+  - id: DES-5
+    stage: DESIGN
+    description: "Define rate-limiting strategy"
+    owningAgent: ArchitectAgent
+    dependsOn: [DES-2]
+    requiresApproval: false
+    tracesTo: [NFR4]
+
+  - id: IMPL-1
+    stage: IMPLEMENTATION
+    description: "Implement ShortUrl entity + repository"
+    owningAgent: DevAgent-Repository
+    dependsOn: [DES-1, DES-3]
+    requiresApproval: false
+    tracesTo: [FR1, FR6, FR7]
+
+  - id: IMPL-2
+    stage: IMPLEMENTATION
+    description: "Implement UrlShortenerService"
+    owningAgent: DevAgent-Service
+    dependsOn: [IMPL-1]
+    requiresApproval: false
+    tracesTo: [FR1, FR3, FR6, FR7]
+
+  - id: IMPL-3
+    stage: IMPLEMENTATION
+    description: "Implement AnalyticsService"
+    owningAgent: DevAgent-Service
+    dependsOn: [IMPL-1]
+    requiresApproval: false
+    tracesTo: [FR4]
+
+  - id: IMPL-4
+    stage: IMPLEMENTATION
+    description: "Implement REST Controllers"
+    owningAgent: DevAgent-Controller
+    dependsOn: [IMPL-2, IMPL-3, DES-2]
+    requiresApproval: false
+    tracesTo: [FR1, FR2, FR3, FR4, FR5]
+
+  - id: IMPL-5
+    stage: IMPLEMENTATION
+    description: "Implement Redis caching layer"
+    owningAgent: DevAgent-Service
+    dependsOn: [IMPL-2, DES-4]
+    requiresApproval: false
+    tracesTo: [NFR1]
+
+  - id: IMPL-6
+    stage: IMPLEMENTATION
+    description: "Implement rate-limiting filter"
+    owningAgent: DevAgent-Controller
+    dependsOn: [IMPL-4, DES-5]
+    requiresApproval: false
+    tracesTo: [NFR4]
+
+  - id: IMPL-7
+    stage: IMPLEMENTATION
+    description: "Implement global exception handling + validation"
+    owningAgent: DevAgent-Controller
+    dependsOn: [IMPL-4]
+    requiresApproval: false
+    tracesTo: [FR3, FR5]
+
+  - id: TEST-1
+    stage: TESTING
+    description: "Unit tests: service layer"
+    owningAgent: TestAgent
+    dependsOn: [IMPL-2, IMPL-3]
+    requiresApproval: false
+    tracesTo: [FR1, FR3, FR6, FR7]
+
+  - id: TEST-2
+    stage: TESTING
+    description: "Integration tests: controller endpoints"
+    owningAgent: TestAgent
+    dependsOn: [IMPL-4, IMPL-7]
+    requiresApproval: true
+    tracesTo: [FR1, FR2, FR3, FR4, FR5]
+
+  - id: TEST-3
+    stage: TESTING
+    description: "Load/collision test: Base62 generation under concurrency"
+    owningAgent: TestAgent
+    dependsOn: [DES-3, IMPL-2]
+    requiresApproval: false
+    tracesTo: [NFR2]
+
+  - id: TEST-4
+    stage: TESTING
+    description: "Rate-limit and cache behavior tests"
+    owningAgent: TestAgent
+    dependsOn: [IMPL-5, IMPL-6]
+    requiresApproval: false
+    tracesTo: [NFR1, NFR4]
+
+  - id: DOC-1
+    stage: DOCUMENTATION
+    description: "Generate OpenAPI/Swagger docs"
+    owningAgent: DocumentationAgent
+    dependsOn: [IMPL-4]
+    requiresApproval: false
+    tracesTo: [NFR6]
+
+  - id: DOC-2
+    stage: DOCUMENTATION
+    description: "Write README + setup instructions"
+    owningAgent: DocumentationAgent
+    dependsOn: [IMPL-4]
+    requiresApproval: false
+
+  - id: RISK-1
+    stage: VALIDATION_RISK
+    description: "Identify risks, trade-offs, failure scenarios; define validation plan"
+    owningAgent: RiskValidationAgent
+    dependsOn: [TEST-1, TEST-2, TEST-3, TEST-4]
+    requiresApproval: false
+
+  - id: REL-1
+    stage: RELEASE
+    description: "Compile release notes, rollback plan, go/no-go checklist"
+    owningAgent: ReleaseAgent
+    dependsOn: [DOC-1, DOC-2, RISK-1]
+    requiresApproval: true

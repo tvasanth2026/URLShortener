@@ -1,0 +1,59 @@
+workflowId: WF-URL-SHORTENER-BROWNFIELD-001
+intent: "Add rate limiting to the existing URL shortener's public shorten API."
+scope: brownfield
+tasks:
+  - id: REQ-1
+    stage: REQUIREMENTS
+    description: "Interpret enhancement intent, resolve ambiguities"
+    owningAgent: RequirementAgent
+    dependsOn: []
+    requiresApproval: true
+
+  - id: CODE-1
+    stage: CODEBASE_REASONING
+    description: "Identify impacted modules/APIs/data flows in existing service"
+    owningAgent: CodebaseReasoningAgent
+    dependsOn: [REQ-1]
+    requiresApproval: false
+
+  - id: DES-5
+    stage: DESIGN
+    description: "Define rate-limiting strategy for /shorten endpoint"
+    owningAgent: ArchitectAgent
+    dependsOn: [CODE-1]
+    requiresApproval: true
+
+  - id: IMPL-6
+    stage: IMPLEMENTATION
+    description: "Implement rate-limiting filter"
+    owningAgent: DevAgent-Controller
+    dependsOn: [DES-5]
+    requiresApproval: false
+
+  - id: TEST-4
+    stage: TESTING
+    description: "Rate-limit behavior tests (allow/deny thresholds)"
+    owningAgent: TestAgent
+    dependsOn: [IMPL-6]
+    requiresApproval: true
+
+  - id: DOC-2
+    stage: DOCUMENTATION
+    description: "Update README with rate-limit configuration"
+    owningAgent: DocumentationAgent
+    dependsOn: [IMPL-6]
+    requiresApproval: false
+
+  - id: RISK-1
+    stage: VALIDATION_RISK
+    description: "Assess risk of legitimate traffic being blocked"
+    owningAgent: RiskValidationAgent
+    dependsOn: [TEST-4]
+    requiresApproval: false
+
+  - id: REL-1
+    stage: RELEASE
+    description: "Release readiness for rate-limiting enhancement"
+    owningAgent: ReleaseAgent
+    dependsOn: [DOC-2, RISK-1]
+    requiresApproval: true

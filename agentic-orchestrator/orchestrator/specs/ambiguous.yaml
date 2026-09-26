@@ -1,0 +1,59 @@
+workflowId: WF-URL-SHORTENER-AMBIGUOUS-001
+intent: "Make links safer"
+scope: ambiguous
+tasks:
+  - id: REQ-1
+    stage: REQUIREMENTS
+    description: "Interpret vague intent, surface ambiguity, propose concrete interpretation"
+    owningAgent: RequirementAgent
+    dependsOn: []
+    requiresApproval: true
+
+  - id: PLAN-1
+    stage: TASK_DECOMPOSITION
+    description: "Decompose approved interpretation into task graph"
+    owningAgent: PlannerAgent
+    dependsOn: [REQ-1]
+    requiresApproval: false
+
+  - id: DES-6
+    stage: DESIGN
+    description: "Design malicious-URL / phishing-domain validation strategy"
+    owningAgent: ArchitectAgent
+    dependsOn: [PLAN-1]
+    requiresApproval: true
+
+  - id: IMPL-8
+    stage: IMPLEMENTATION
+    description: "Implement URL safety validation (blocklist/format checks) on shorten endpoint"
+    owningAgent: DevAgent-Service
+    dependsOn: [DES-6]
+    requiresApproval: false
+
+  - id: TEST-5
+    stage: TESTING
+    description: "Tests for malicious/blocked URL rejection"
+    owningAgent: TestAgent
+    dependsOn: [IMPL-8]
+    requiresApproval: false
+
+  - id: DOC-3
+    stage: DOCUMENTATION
+    description: "Document safety validation behavior"
+    owningAgent: DocumentationAgent
+    dependsOn: [IMPL-8]
+    requiresApproval: false
+
+  - id: RISK-1
+    stage: VALIDATION_RISK
+    description: "Assess risk of false positives blocking legitimate URLs"
+    owningAgent: RiskValidationAgent
+    dependsOn: [TEST-5]
+    requiresApproval: false
+
+  - id: REL-1
+    stage: RELEASE
+    description: "Release readiness for safety enhancement"
+    owningAgent: ReleaseAgent
+    dependsOn: [DOC-3, RISK-1]
+    requiresApproval: true
